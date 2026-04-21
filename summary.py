@@ -40,8 +40,6 @@ class SummaryJob:
 
         summary = self._ai_summary(
             period=period,
-            start=start,
-            end=end,
             pos=pos,
             neg=neg,
             sug=sug,
@@ -149,7 +147,6 @@ class SummaryJob:
 
     def _keywords(self, msgs):
         counter = Counter()
-
         normalized_stopwords = {s.lower() for s in STOPWORDS}
 
         for msg in msgs:
@@ -169,7 +166,7 @@ class SummaryJob:
             return f"{label}은 별도로 확인되지 않음."
         return items[:limit]
 
-    def _ai_summary(self, period, start, end, pos, neg, sug, gp_pos, gp_neg, gp_neu, keywords):
+    def _ai_summary(self, period, pos, neg, sug, gp_pos, gp_neg, gp_neu, keywords):
         prompt = f"""
 기간: {period}
 
@@ -206,6 +203,16 @@ class SummaryJob:
 4. 키워드 분석
 - 주요 반복 키워드와 의미를 짧게 정리
 - 키워드가 부족하면 자연스럽게 축약
+
+5. 이슈 TOP 5
+- 실제 데이터 기준으로 가장 중요하거나 반복적으로 보이는 이슈를 최대 5개까지 정리
+- 빈도, 반복성, 영향도를 함께 고려
+- 이슈가 부족하면 5개를 억지로 채우지 말 것
+
+6. 추천 대응
+- 운영팀이 바로 참고할 수 있는 대응 방향을 2~4개 정도 제안
+- 데이터에 근거한 실무형 액션으로 작성
+- 과장 없이 작성
 
 마지막에는 종합적으로 1문단 마무리.
 
